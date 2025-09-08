@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""
+Thomasnet Scraper Web Server
+This server provides an HTTP API to run the Thomasnet scraper
+"""
+
+import json
+import sys
+import os
+import subprocess
+from pathlib import Path
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+import threading
+import time
+
+class ThomasnetHandler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        # Handle CORS preflight requests
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
+    def do_POST(self):
+        if self.path == '/scrape':
+            self.handle_scrape()
+        else:
+            self.send_error(404, "Not Found")
+
+    def do_GET(self):
+        if self.path == '/health':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "ok"}).encode())
+        else:
+            self.send_error(404, "Not Found")
+
+    def handle_scrape(self):
+        try:
+            # Read request body
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            # Extract parameters
+            state = data.get('state', 'California')
+            service = data.get('service', 'CNC Machining')
+            sort_order = data.get('sort_order', 'Ascending')
+            max_results = data.get('max_results', 100)
+            delay = data.get('delay', 2)
+            
+            print(f"Scraping request: {state}, {service}, {sort_order}, {max_results}")
+            
+            # Run the scraper
+            prospects = self.run_scraper(state, service, sort_order, max_results, delay)
+            
+            # Send response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(prospects).encode())
+            
+        except Exception as e:
+            print(f"Error handling scrape request: {e}")
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            error_response = {"error": str(e)}
+            self.wfile.write(json.dumps(error_response).encode())
+
+    def run_scraper(self, state, service, sort_order, max_results, delay):
+        """Run the actual Thomasnet scraper"""
+        try:
+            # Get the path to the command-line scraper
+            scraper_path = Path(__file__).parent / "thomasnet-scraper" / "run_scraper.py"
+            
+            if not scraper_path.exists():
+                return {"error": "Thomasnet scraper not found"}
+            
+            # Run the actual scraper
+            import subprocess
+            import json
+            
+            cmd = [
+                "python3",
+                str(scraper_path),
+                state,
+                service,
+                sort_order,
+                str(max_results)
+            ]
+            
+            print(f"Running scraper command: {' '.join(cmd)}")
+            print(f"Working directory: {scraper_path.parent}")
+            
+            result = subprocess.run(
+                cmd, 
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True, 
+                cwd=str(scraper_path.parent),
+                timeout=300  # 5 minute timeout
+            )
+            
+            print(f"Scraper return code: {result.returncode}")
+            print(f"Scraper stdout: {result.stdout[:500]}...")
+            print(f"Scraper stderr: {result.stderr}")
+            
+            if result.returncode != 0:
+                return {"error": f"Scraper failed: {result.stderr}"}
+            
+            # Parse the JSON output
+            try:
+                if not result.stdout.strip():
+                    return {"error": "Scraper returned empty output"}
+                    
+                prospects = json.loads(result.stdout)
+                if isinstance(prospects, list):
+                    return prospects
+                else:
+                    return {"error": "Invalid scraper output format"}
+            except json.JSONDecodeError as e:
+                return {"error": f"Failed to parse scraper output: {e}. Output: {result.stdout[:200]}"}
+            
+        except subprocess.TimeoutExpired:
+            return {"error": "Scraper timed out after 5 minutes"}
+        except Exception as e:
+            return {"error": f"Scraper failed: {str(e)}"}
+
+    def generate_mock_prospects(self, state, service, count):
+        """Generate realistic mock prospects for testing"""
+        companies = [
+            'Precision Manufacturing Inc', 'Advanced CNC Solutions', 'Quality Machining Co',
+            'Industrial Components LLC', 'Custom Fabrication Works', 'Steel Processing Corp',
+            'Metal Works Industries', 'Precision Tooling Inc', 'Advanced Welding Services',
+            'Machine Shop Solutions', 'Industrial Services Group', 'Custom Parts Manufacturing'
+        ]
+        
+        services = [
+            'CNC Machining', 'Robotic Welding', 'Powder Coating', 'Metal Fabrication',
+            'Precision Tooling', 'Custom Manufacturing', 'Industrial Services', 'Quality Control'
+        ]
+        
+        states = ['California', 'Texas', 'Florida', 'New York', 'Illinois', 'Pennsylvania']
+        
+        prospects = []
+        for i in range(min(count, 50)):  # Limit to 50 for performance
+            company = companies[i % len(companies)]
+            if i > 0:
+                company += f" {i + 1}"
+            
+            # Generate realistic data
+            revenue = f"${(i * 2.5 + 5):.1f}M"
+            employees = (i * 10 + 25) % 200 + 25
+            
+            prospects.append({
+                "company": company,
+                "website": f"https://{company.lower().replace(' ', '').replace('inc', '').replace('llc', '').replace('corp', '')}.com",
+                "state": state,
+                "service": service,
+                "revenue": revenue,
+                "employees": employees,
+                "contact": f"Contact Person {i + 1}",
+                "email": f"contact{i + 1}@{company.lower().replace(' ', '')}.com",
+                "phone": f"555-{1000 + i:04d}",
+                "industry": "Manufacturing",
+                "notes": f"Generated from Thomasnet scraper - {service} in {state}"
+            })
+        
+        return prospects
+
+    def log_message(self, format, *args):
+        # Suppress default logging
+        pass
+
+def run_server(port=8080):
+    """Start the Thomasnet scraper server"""
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, ThomasnetHandler)
+    print(f"Thomasnet scraper server running on port {port}")
+    print(f"Health check: http://localhost:{port}/health")
+    print(f"Scrape endpoint: http://localhost:{port}/scrape")
+    
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nShutting down server...")
+        httpd.shutdown()
+
+if __name__ == '__main__':
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    run_server(port)

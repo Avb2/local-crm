@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales CRM Dashboard - New Tab</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>Sales CRM</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-warning call-mode-toggle" id="callModeToggle">
+                        <i class="fas fa-phone"></i>
+                        <span>Call Mode</span>
+                    </button>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalLeads">0</span>
+                        <span class="stat-label">Total Leads</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="queueCount">0</span>
+                        <span class="stat-label">Meetings Set</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="calledToday">0</span>
+                        <span class="stat-label">Called Today</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </button>
+            <button class="tab-btn" data-tab="leads">
+                <i class="fas fa-users"></i>
+                Leads
+            </button>
+            <button class="tab-btn" data-tab="queue">
+                <i class="fas fa-phone"></i>
+                Call Queue
+            </button>
+            <button class="tab-btn" data-tab="email">
+                <i class="fas fa-envelope"></i>
+                Email Campaign
+            </button>
+            <button class="tab-btn" data-tab="meetings">
+                <i class="fas fa-calendar-check"></i>
+                Meetings
+            </button>
+            <button class="tab-btn" data-tab="prospecting">
+                <i class="fas fa-search"></i>
+                Prospecting
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                Settings
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Sales Dashboard</h2>
+                    <div class="dashboard-time">
+                        <div class="time-zone" id="easternTime">
+                            <span class="timezone-label">EST/EDT</span>
+                            <span class="time-display" id="easternTimeDisplay">--:--:--</span>
+                        </div>
+                        <div class="time-zone" id="centralTime">
+                            <span class="timezone-label">CST/CDT</span>
+                            <span class="time-display" id="centralTimeDisplay">--:--:--</span>
+                        </div>
+                        <div class="time-zone" id="mountainTime">
+                            <span class="timezone-label">MST/MDT</span>
+                            <span class="time-display" id="mountainTimeDisplay">--:--:--</span>
+                        </div>
+                        <div class="time-zone" id="pacificTime">
+                            <span class="timezone-label">PST/PDT</span>
+                            <span class="time-display" id="pacificTimeDisplay">--:--:--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Call Analytics Section -->
+                    <div class="dashboard-card call-analytics-card">
+                        <h3><i class="fas fa-phone"></i> Call Analytics</h3>
+                        <div class="analytics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value" id="totalCalls">0</div>
+                                <div class="metric-label">Total Calls</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="answeredCalls">0</div>
+                                <div class="metric-label">Meetings Set</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="receptionistCalls">0</div>
+                                <div class="metric-label">Receptionist</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="notInterestedCalls">0</div>
+                                <div class="metric-label">Not Interested</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="answerRate">0%</div>
+                                <div class="metric-label">Answer Rate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="meetingsSetRate">0%</div>
+                                <div class="metric-label">Meetings Set Rate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="callsToday">0</div>
+                                <div class="metric-label">Calls Today</div>
+                            </div>
+                        </div>
+                        <div class="call-trends">
+                            <h4>Call Trends (Last 7 Days)</h4>
+                            <div class="trend-chart" id="callTrendChart">
+                                <canvas id="callTrendCanvas" width="400" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lead Analytics Section -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-chart-pie"></i> Lead Analytics</h3>
+                        <div class="lead-metrics">
+                            <div class="metric-row">
+                                <span class="metric-name">Total Leads:</span>
+                                <span class="metric-value" id="totalLeads">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">New This Week:</span>
+                                <span class="metric-value" id="newLeadsWeek">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">Never Called:</span>
+                                <span class="metric-value" id="neverCalled">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-name">Meetings Set:</span>
+                                <span class="metric-value" id="leadsInQueue">0</span>
+                            </div>
+                        </div>
+                        <!-- Mini Queue Card -->
+                        <div class="mini-queue-card">
+                            <h4><i class="fas fa-phone-alt"></i> Next to Call</h4>
+                            <div class="mini-queue-content" id="miniQueueContent">
+                                <div class="mini-queue-item">
+                                    <div class="mini-company" id="miniCompanyName">No leads in queue</div>
+                                    <div class="mini-details">
+                                        <span class="mini-state" id="miniState">-</span>
+                                        <a href="#" class="mini-website" id="miniWebsite" target="_blank">Visit Site</a>
+                                    </div>
+                                    <button class="btn btn-sm btn-success mini-call-btn" id="miniCallBtn" disabled>
+                                        <i class="fas fa-phone"></i> Called
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Notepad -->
+                    <div class="dashboard-card notepad-card">
+                        <h3><i class="fas fa-sticky-note"></i> Sales Notepad</h3>
+                        <div class="notepad-container">
+                            <textarea id="salesNotepad" placeholder="Take notes, reminders, or jot down important information..."></textarea>
+                            <div class="notepad-actions">
+                                <button class="btn btn-sm btn-primary" id="saveNotepadBtn">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-sm btn-secondary" id="clearNotepadBtn">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                                <span class="notepad-status" id="notepadStatus">Auto-saved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geographic Distribution -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Geographic Distribution</h3>
+                        <div class="geo-stats" id="geoStats">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Industry Breakdown -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-industry"></i> Industry Breakdown</h3>
+                        <div class="industry-stats" id="industryStats">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                        <div class="activity-list" id="recentActivity">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leads Tab -->
+            <div class="tab-content" id="leads">
+                <div class="leads-header">
+                    <div class="leads-controls">
+                        <button class="btn btn-primary" id="importCsvBtn">
+                            <i class="fas fa-upload"></i> Import CSV(s)
+                        </button>
+                        <button class="btn btn-secondary" id="exportCsvBtn">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                        <button class="btn btn-success" id="addLeadBtn">
+                            <i class="fas fa-plus"></i> Add Lead
+                        </button>
+                        <button class="btn btn-warning" id="editLeadBtn">
+                            <i class="fas fa-edit"></i> Edit Lead
+                        </button>
+                        <button class="btn btn-danger" id="deleteLeadBtn">
+                            <i class="fas fa-trash"></i> Delete Lead
+                        </button>
+                    </div>
+                    <div class="leads-filters">
+                        <div class="filter-group">
+                            <label>State:</label>
+                            <select id="stateFilter">
+                                <option value="all">States</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Industry:</label>
+                            <select id="industryFilter">
+                                <option value="all">Industry</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" id="searchInput" placeholder="Search leads...">
+                        </div>
+                        <button class="btn btn-info" id="viewMapBtn">
+                            <i class="fas fa-map"></i> View Map
+                        </button>
+                    </div>
+                </div>
+                <div class="leads-table-container">
+                    <table class="leads-table" id="leadsTable">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Website</th>
+                                <th>Last Called</th>
+                                <th>State</th>
+                                <th>Industry</th>
+                                <th>Phone</th>
+                                <th>Contact</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination Controls -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="paginationInfo">Showing 0 of 0 leads</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-secondary" id="firstPageBtn" disabled>
+                            <i class="fas fa-angle-double-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="prevPageBtn" disabled>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <span class="page-numbers" id="pageNumbers">
+                            <!-- Page numbers will be generated here -->
+                        </span>
+                        <button class="btn btn-sm btn-secondary" id="nextPageBtn" disabled>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="lastPageBtn" disabled>
+                            <i class="fas fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                    <div class="pagination-settings">
+                        <label>Show:</label>
+                        <select id="pageSizeSelect">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>per page</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Queue Tab -->
+            <div class="tab-content" id="queue">
+                <div class="queue-header">
+                    <div class="queue-filters">
+                        <div class="filter-group">
+                            <label>State:</label>
+                            <select id="queueStateFilter">
+                                <option value="all">All States</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Industry:</label>
+                            <select id="queueIndustryFilter">
+                                <option value="all">All Industries</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Notes Filter:</label>
+                            <input type="text" id="notesFilter" placeholder="Filter by notes...">
+                        </div>
+                    </div>
+                    <div class="queue-selector">
+                        <div class="filter-group">
+                            <label>Queue:</label>
+                            <select id="queueSelector">
+                                <option value="default">Default Queue</option>
+                            </select>
+                            <button class="btn btn-sm btn-secondary" id="manageQueuesBtn">
+                                <i class="fas fa-cog"></i> Manage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-lead-card">
+                    <h3><i class="fas fa-user"></i> Next to Call</h3>
+                    <div class="current-lead-info" id="currentLeadInfo">
+                        <div class="lead-field">
+                            <label>Company:</label>
+                            <span id="currentCompany">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Contact:</label>
+                            <span id="currentContact">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Email:</label>
+                            <span id="currentEmail">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Industry:</label>
+                            <span id="currentIndustry">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>State:</label>
+                            <span id="currentState">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Phone:</label>
+                            <span id="currentPhone">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Website:</label>
+                            <span id="currentWebsite">-</span>
+                        </div>
+                        <div class="lead-field">
+                            <label>Notes:</label>
+                            <span id="currentNotes">-</span>
+                        </div>
+                    </div>
+                    <div class="current-lead-actions">
+                        <button class="btn btn-primary" id="copyPhoneBtn">
+                            <i class="fas fa-copy"></i> Copy Phone
+                        </button>
+                        <button class="btn btn-info" id="visitWebsiteBtn">
+                            <i class="fas fa-external-link-alt"></i> Visit Website
+                        </button>
+                        <button class="btn btn-success" id="markCalledBtn">
+                            <i class="fas fa-phone"></i> Called
+                        </button>
+                    </div>
+                </div>
+
+                <div class="queue-table-container">
+                    <table class="queue-table" id="queueTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>State</th>
+                                <th>Industry</th>
+                                <th>Email</th>
+                                <th>Last Called</th>
+                                <th>Phone</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="queueTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Call Log Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="callLogPaginationInfo">Showing 0 of 0 calls</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-secondary" id="callLogFirstPageBtn" disabled>
+                            <i class="fas fa-angle-double-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="callLogPrevPageBtn" disabled>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <span class="page-numbers" id="callLogPageNumbers">
+                            <!-- Page numbers will be generated here -->
+                        </span>
+                        <button class="btn btn-sm btn-secondary" id="callLogNextPageBtn" disabled>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="callLogLastPageBtn" disabled>
+                            <i class="fas fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                    <div class="pagination-settings">
+                        <label>Show:</label>
+                        <select id="callLogPageSizeSelect">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>per page</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Tab -->
+            <div class="tab-content" id="email">
+                <div class="email-header">
+                    <div class="email-filters">
+                        <div class="filter-group">
+                            <label>State:</label>
+                            <select id="emailStateFilter">
+                                <option value="all">All States</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Industry:</label>
+                            <select id="emailIndustryFilter">
+                                <option value="all">All Industries</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="email-compose">
+                    <div class="compose-header">
+                        <h3><i class="fas fa-envelope"></i> Compose Email</h3>
+                    </div>
+                    <div class="compose-form">
+                        <div class="form-group">
+                            <label>Subject:</label>
+                            <input type="text" id="emailSubject" placeholder="Enter email subject...">
+                        </div>
+                        <div class="form-group">
+                            <label>Message:</label>
+                            <textarea id="emailBody" rows="8" placeholder="Enter your message..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Recipients:</label>
+                            <div class="recipients-info">
+                                <span id="recipientCount">0</span> recipients selected
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-large" id="sendEmailsBtn">
+                            <i class="fas fa-paper-plane"></i> Send Emails
+                        </button>
+                    </div>
+                </div>
+
+                <div class="email-table-container">
+                    <table class="email-table" id="emailTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllEmails"></th>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emailTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Meetings Tab -->
+            <div class="tab-content" id="meetings">
+                <div class="meetings-header">
+                    <h2><i class="fas fa-calendar-check"></i> Scheduled Meetings</h2>
+                    <div class="meetings-filters">
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <select id="meetingStatusFilter">
+                                <option value="all">All Meetings</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" id="meetingSearchInput" placeholder="Search meetings...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="meetings-table-container">
+                    <table class="meetings-table" id="meetingsTable">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Meeting Date</th>
+                                <th>Meeting Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meetingsTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Prospecting Tab -->
+            <div class="tab-content" id="prospecting">
+                <div class="prospecting-header">
+                    <h2><i class="fas fa-search"></i> Lead Prospecting</h2>
+                    <div class="prospecting-controls">
+                        <button class="btn btn-primary" id="runThomasnetScraperBtn">
+                            <i class="fas fa-spider"></i> Run Thomasnet Scraper
+                        </button>
+                        <button class="btn btn-success" id="importProspectsBtn">
+                            <i class="fas fa-upload"></i> Import Prospects
+                        </button>
+                        <button class="btn btn-info" id="reviewProspectsBtn">
+                            <i class="fas fa-eye"></i> Review Prospects
+                        </button>
+                        <button class="btn btn-warning" id="finalizeProspectsBtn">
+                            <i class="fas fa-check-circle"></i> Finalize Prospects
+                        </button>
+                        <button class="btn btn-danger" id="deleteAllProspectsBtn">
+                            <i class="fas fa-trash"></i> Delete All Prospects
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Thomasnet Scraper Widget -->
+                <div class="scraper-widget" id="scraperWidget" style="display: none;">
+                    <div class="scraper-header">
+                        <h3><i class="fas fa-globe"></i> Thomasnet Scraper</h3>
+                        <button class="btn btn-sm btn-secondary" id="closeScraperBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="scraper-controls">
+                        <div class="form-group">
+                            <label for="scraperService">Service Type:</label>
+                            <select id="scraperService">
+                                <option value="">Select Service...</option>
+                                <option value="rapid-prototyping-services-66148859">Rapid Prototyping Services</option>
+                                <option value="plastic-rapid-prototyping-services-97007158">Plastic Rapid Prototyping Services</option>
+                                <option value="machining-assembly-finishing-96098819">Machining Assembly Finishing</option>
+                                <option value="metal-finishing-50560200">Metal Finishing</option>
+                                <option value="sealants-73231607">Sealants</option>
+                                <option value="cnc-milling-51276103">CNC Milling</option>
+                                <option value="contract-grinding-polishing-36140606">Contract Grinding Polishing</option>
+                                <option value="robotic-inspection-97009744">Robotic Inspection</option>
+                                <option value="robotic-tracking-systems-68643642">Robotic Tracking Systems</option>
+                                <option value="robotic-positioners-62281456">Robotic Positioners</option>
+                                <option value="robotic-palletizers-56493208">Robotic Palletizers</option>
+                                <option value="precision-grinding-36191302">Precision Grinding</option>
+                                <option value="deburring-21790803">Deburring</option>
+                                <option value="metal-3d-printing-additive-manufacturing-97012849">Metal 3D Printing Additive Manufacturing</option>
+                                <option value="additive-manufacturing-3d-printing-85451102">Additive Manufacturing 3D Printing</option>
+                                <option value="robotic-welding-services-93620391">Robotic Welding Services</option>
+                                <option value="welding-services-93550804">Welding Services</option>
+                                <option value="cnc-machining-45330503">CNC Machining</option>
+                                <option value="cnc-turning-89622625">CNC Turning</option>
+                                <option value="production-machining-45620424">Production Machining</option>
+                                <option value="general-machining-45340403">General Machining</option>
+                                <option value="complex-difficult-machining-96095294">Complex Difficult Machining</option>
+                                <option value="foam-machining-services-97008321">Foam Machining Services</option>
+                                <option value="precision-machining-45620408">Precision Machining</option>
+                                <option value="prototype-machining-45620440">Prototype Machining</option>
+                                <option value="special-machining-2900">Special Machining</option>
+                                <option value="general-contract-machining-2894">General Contract Machining</option>
+                                <option value="machined-parts-57340606">Machined Parts</option>
+                                <option value="waterjet-cutting-services-21533906">Waterjet Cutting Services</option>
+                                <option value="cnc-cutting-services-21533153">CNC Cutting Services</option>
+                                <option value="plasma-cutting-services-58820804">Plasma Cutting Services</option>
+                                <option value="stainless-steel-cutting-services-78084407">Stainless Steel Cutting Services</option>
+                                <option value="metal-laser-cutting-services-43277151">Metal Laser Cutting Services</option>
+                                <option value="powder-coating-services-62441357">Powder Coating Services</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scraperState">State:</label>
+                            <select id="scraperState">
+                                <option value="">Select State...</option>
+                                <option value="alabama">Alabama</option>
+                                <option value="alaska">Alaska</option>
+                                <option value="arizona">Arizona</option>
+                                <option value="arkansas">Arkansas</option>
+                                <option value="california">California</option>
+                                <option value="northern-california">Northern California</option>
+                                <option value="southern-california">Southern California</option>
+                                <option value="colorado">Colorado</option>
+                                <option value="connecticut">Connecticut</option>
+                                <option value="delaware">Delaware</option>
+                                <option value="florida">Florida</option>
+                                <option value="georgia">Georgia</option>
+                                <option value="hawaii">Hawaii</option>
+                                <option value="idaho">Idaho</option>
+                                <option value="illinois">Illinois</option>
+                                <option value="indiana">Indiana</option>
+                                <option value="iowa">Iowa</option>
+                                <option value="kansas">Kansas</option>
+                                <option value="kentucky">Kentucky</option>
+                                <option value="louisiana">Louisiana</option>
+                                <option value="maine">Maine</option>
+                                <option value="maryland">Maryland</option>
+                                <option value="massachusetts">Massachusetts</option>
+                                <option value="michigan">Michigan</option>
+                                <option value="minnesota">Minnesota</option>
+                                <option value="mississippi">Mississippi</option>
+                                <option value="missouri">Missouri</option>
+                                <option value="montana">Montana</option>
+                                <option value="nebraska">Nebraska</option>
+                                <option value="nevada">Nevada</option>
+                                <option value="new-hampshire">New Hampshire</option>
+                                <option value="new-jersey">New Jersey</option>
+                                <option value="new-mexico">New Mexico</option>
+                                <option value="new-york">New York</option>
+                                <option value="north-carolina">North Carolina</option>
+                                <option value="north-dakota">North Dakota</option>
+                                <option value="ohio">Ohio</option>
+                                <option value="oklahoma">Oklahoma</option>
+                                <option value="oregon">Oregon</option>
+                                <option value="pennsylvania">Pennsylvania</option>
+                                <option value="rhode-island">Rhode Island</option>
+                                <option value="south-carolina">South Carolina</option>
+                                <option value="south-dakota">South Dakota</option>
+                                <option value="tennessee">Tennessee</option>
+                                <option value="texas">Texas</option>
+                                <option value="utah">Utah</option>
+                                <option value="vermont">Vermont</option>
+                                <option value="virginia">Virginia</option>
+                                <option value="washington">Washington</option>
+                                <option value="west-virginia">West Virginia</option>
+                                <option value="wisconsin">Wisconsin</option>
+                                <option value="wyoming">Wyoming</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scraperMaxResults">Max Results:</label>
+                            <input type="number" id="scraperMaxResults" value="100" min="10" max="1000">
+                        </div>
+                        
+                        <div class="scraper-actions">
+                            <button class="btn btn-primary" id="startScrapingBtn">
+                                <i class="fas fa-play"></i> Start Scraping
+                            </button>
+                            <button class="btn btn-danger" id="stopScrapingBtn" style="display: none;">
+                                <i class="fas fa-stop"></i> Stop Scraping
+                            </button>
+                            <button class="btn btn-info" id="manualScrapingBtn">
+                                <i class="fas fa-hand-paper"></i> Manual Entry
+                            </button>
+                        </div>
+                        
+                        <div class="scraper-note">
+                            <p><i class="fas fa-info-circle"></i> <strong>Note:</strong> Automated scraping works within the iframe. Use Manual Entry as a backup or for additional companies.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scraper-progress" id="scraperProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    
+                    <div class="scraper-status" id="scraperStatus"></div>
+                    
+                    <div class="scraper-info">
+                        <div class="info-card">
+                            <h4><i class="fas fa-info-circle"></i> How It Works</h4>
+                            <ul>
+                                <li><strong>Start Scraping:</strong> Opens Thomasnet in a new tab and begins automated scraping</li>
+                                <li><strong>Watch Progress:</strong> Monitor scraping progress in real-time below</li>
+                                <li><strong>Manual Entry:</strong> Add additional companies manually if needed</li>
+                                <li><strong>Import Results:</strong> Add all scraped companies to your CRM</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="scraper-results" id="scraperResults" style="display: none;">
+                        <h4>Scraped Results</h4>
+                        <div class="results-summary" id="resultsSummary"></div>
+                        <div class="results-actions">
+                            <button class="btn btn-success" id="importResultsBtn">
+                                <i class="fas fa-download"></i> Import to CRM
+                            </button>
+                            <button class="btn btn-info" id="exportResultsBtn">
+                                <i class="fas fa-file-export"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Prospecting Pipeline -->
+                <div class="prospecting-pipeline">
+                    <div class="pipeline-stage">
+                        <h4><i class="fas fa-download"></i> Unreviewed</h4>
+                        <div class="stage-content">
+                            <div class="stage-stats">
+                                <span class="stat-number" id="unreviewedCount">0</span>
+                                <span class="stat-label">Prospects</span>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn btn-sm btn-info" id="viewUnreviewedBtn">View</button>
+                                <button class="btn btn-sm btn-primary" id="reviewUnreviewedBtn">Review</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <h4><i class="fas fa-check-circle"></i> Finalized</h4>
+                        <div class="stage-content">
+                            <div class="stage-stats">
+                                <span class="stat-number" id="finalizedCount">0</span>
+                                <span class="stat-label">Prospects</span>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn btn-sm btn-info" id="viewFinalizedBtn">View</button>
+                                <button class="btn btn-sm btn-success" id="importFinalizedBtn">Import to CRM</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <h4><i class="fas fa-times-circle"></i> Unqualified</h4>
+                        <div class="stage-content">
+                            <div class="stage-stats">
+                                <span class="stat-number" id="unqualifiedCount">0</span>
+                                <span class="stat-label">Prospects</span>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn btn-sm btn-info" id="viewUnqualifiedBtn">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prospecting Table -->
+                <div class="prospecting-table-container">
+                    <div class="prospecting-filters">
+                        <div class="filter-group">
+                            <label>Stage:</label>
+                            <select id="prospectingStageFilter">
+                                <option value="all">All Stages</option>
+                                <option value="unreviewed">Unreviewed</option>
+                                <option value="finalized">Finalized</option>
+                                <option value="unqualified">Unqualified</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>State:</label>
+                            <select id="prospectingStateFilter">
+                                <option value="all">All States</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Service:</label>
+                            <select id="prospectingServiceFilter">
+                                <option value="all">All Services</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" id="prospectingSearchInput" placeholder="Search prospects...">
+                        </div>
+                    </div>
+                    
+                    <table class="prospecting-table" id="prospectingTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllProspects"></th>
+                                <th>Company</th>
+                                <th>Website</th>
+                                <th>State</th>
+                                <th>Service</th>
+                                <th>Revenue</th>
+                                <th>Employees</th>
+                                <th>Stage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prospectingTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Prospecting Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="prospectingPaginationInfo">Showing 0 of 0 prospects</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-secondary" id="prospectingFirstPageBtn" disabled>
+                            <i class="fas fa-angle-double-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="prospectingPrevPageBtn" disabled>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <span class="page-numbers" id="prospectingPageNumbers">
+                            <!-- Page numbers will be generated here -->
+                        </span>
+                        <button class="btn btn-sm btn-secondary" id="prospectingNextPageBtn" disabled>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="prospectingLastPageBtn" disabled>
+                            <i class="fas fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                    <div class="pagination-settings">
+                        <label>Show:</label>
+                        <select id="prospectingPageSizeSelect">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>per page</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings">
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3><i class="fas fa-cog"></i> General Settings</h3>
+                        <div class="form-group">
+                            <label>Call Queue Days:</label>
+                            <input type="number" id="callQueueDays" value="7" min="1" max="30">
+                            <small>Number of days to include leads in call queue</small>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3><i class="fas fa-envelope"></i> Email Settings</h3>
+                        <div class="form-group">
+                            <label>SMTP Server:</label>
+                            <input type="text" id="smtpServer" placeholder="smtp.gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP Port:</label>
+                            <input type="number" id="smtpPort" value="587" min="1" max="65535">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP Username:</label>
+                            <input type="text" id="smtpUser" placeholder="your-email@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP Password:</label>
+                            <input type="password" id="smtpPass" placeholder="Your email password">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3><i class="fas fa-database"></i> Data Management</h3>
+                        <div class="form-group">
+                            <button class="btn btn-warning" id="exportDataBtn">
+                                <i class="fas fa-download"></i> Export All Data
+                            </button>
+                            <button class="btn btn-danger" id="clearDataBtn">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-large" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="leadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Lead</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="leadForm">
+                    <div class="form-group">
+                        <label>Company Name *:</label>
+                        <input type="text" id="modalCompany" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Name:</label>
+                        <input type="text" id="modalContact">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="modalEmail">
+                    </div>
+                    <div class="form-group">
+                        <label>Industry:</label>
+                        <input type="text" id="modalIndustry">
+                    </div>
+                    <div class="form-group">
+                        <label>State:</label>
+                        <input type="text" id="modalState">
+                    </div>
+                    <div class="form-group">
+                        <label>Website:</label>
+                        <input type="url" id="modalWebsite">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone:</label>
+                        <input type="tel" id="modalPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>Comments:</label>
+                        <textarea id="modalComments" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes:</label>
+                        <textarea id="modalNotes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+                <button class="btn btn-primary" id="saveModal">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="callNotesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Call Notes</h3>
+                <button class="modal-close" id="closeCallNotesModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Call Outcome:</label>
+                    <select id="callOutcome" required>
+                        <option value="">Select outcome...</option>
+                            <option value="meeting_set">Meeting Set</option>
+                            <option value="receptionist">Receptionist</option>
+                            <option value="not_interested">Not Interested</option>
+                        <option value="voicemail">Voicemail</option>
+                        <option value="spoke_w_contact">Spoke w/ Contact</option>
+                        <option value="no_answer">No Answer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Call Notes:</label>
+                    <textarea id="callNotesText" rows="8" placeholder="Enter your call notes..."></textarea>
+                </div>
+                
+                <!-- Meeting Details (shown when Meeting Set is selected) -->
+                <div class="form-group" id="meetingDetailsGroup" style="display: none;">
+                    <h4>Meeting Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Meeting Date:</label>
+                            <input type="date" id="meetingDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Meeting Time:</label>
+                            <input type="time" id="meetingTime">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Notes:</label>
+                        <textarea id="meetingNotes" rows="3" placeholder="Meeting agenda, topics to discuss..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Google Calendar Link:</label>
+                        <input type="url" id="googleCalendarLink" placeholder="https://calendar.google.com/event?action=TEMPLATE&...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCallNotes">Cancel</button>
+                <button class="btn btn-primary" id="saveCallNotes">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Queue Management Modal -->
+    <div class="modal" id="queueManagementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Manage Custom Queues</h3>
+                <button class="close-modal" id="closeQueueModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="queue-management-tabs">
+                    <button class="tab-btn active" data-tab="existing">Existing Queues</button>
+                    <button class="tab-btn" data-tab="create">Create New Queue</button>
+                </div>
+                
+                <!-- Existing Queues Tab -->
+                <div class="tab-content active" id="existing">
+                    <div class="queue-list" id="queueList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Create New Queue Tab -->
+                <div class="tab-content" id="create">
+                    <div class="form-group">
+                        <label>Queue Name:</label>
+                        <input type="text" id="newQueueName" placeholder="Enter queue name...">
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <input type="text" id="newQueueDescription" placeholder="Optional description...">
+                    </div>
+                    
+                    <div class="lead-selection">
+                        <h4>Select Leads for Queue</h4>
+                        <div class="selection-filters">
+                            <div class="filter-group">
+                                <label>State:</label>
+                                <select id="selectionStateFilter">
+                                    <option value="all">All States</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Industry:</label>
+                                <select id="selectionIndustryFilter">
+                                    <option value="all">All Industries</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Search:</label>
+                                <input type="text" id="selectionSearchInput" placeholder="Search leads...">
+                            </div>
+                        </div>
+                        
+                        <div class="lead-selection-table">
+                            <table class="selection-table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllLeads"></th>
+                                        <th>Company</th>
+                                        <th>Contact</th>
+                                        <th>State</th>
+                                        <th>Industry</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="selectionTableBody">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Lead Selection Pagination -->
+                        <div class="lead-selection-pagination" id="leadSelectionPagination">
+                            <div class="pagination-left">
+                                <span class="pagination-info" id="leadSelectionPaginationInfo">Showing 0 of 0 leads</span>
+                            </div>
+                            <div class="pagination-center">
+                                <div class="pagination-controls">
+                                    <button class="pagination-btn pagination-btn-nav" id="leadSelectionFirstPageBtn" disabled>
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </button>
+                                    <button class="pagination-btn pagination-btn-nav" id="leadSelectionPrevPageBtn" disabled>
+                                        <i class="fas fa-angle-left"></i>
+                                    </button>
+                                    <div class="page-numbers" id="leadSelectionPageNumbers">
+                                        <!-- Page numbers will be generated here -->
+                                    </div>
+                                    <button class="pagination-btn pagination-btn-nav" id="leadSelectionNextPageBtn" disabled>
+                                        <i class="fas fa-angle-right"></i>
+                                    </button>
+                                    <button class="pagination-btn pagination-btn-nav" id="leadSelectionLastPageBtn" disabled>
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pagination-right">
+                                <div class="page-size-selector">
+                                    <label>Show</label>
+                                    <select id="leadSelectionPageSizeSelect" class="page-size-select">
+                                        <option value="10">10</option>
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    <span>per page</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="selection-summary">
+                            <span id="selectedCount">0 leads selected</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelQueueModal">Cancel</button>
+                <button class="btn btn-primary" id="saveQueueModal" style="display: none;">Create Queue</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Script Management Modal -->
+    <div class="modal" id="scriptManagementModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> Manage Call Scripts</h3>
+                <button class="modal-close" id="closeScriptModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="script-management-tabs">
+                    <button class="tab-btn active" data-tab="script-list">My Scripts</button>
+                    <button class="tab-btn" data-tab="script-editor">Create/Edit</button>
+                </div>
+                
+                <!-- Script List Tab -->
+                <div class="tab-content active" id="script-list">
+                    <div class="script-list-header">
+                        <h4>Your Call Scripts</h4>
+                        <button class="btn btn-primary" id="createNewScriptBtn">
+                            <i class="fas fa-plus"></i> New Script
+                        </button>
+                    </div>
+                    <div class="script-list" id="scriptList">
+                        <!-- Scripts will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Script Editor Tab -->
+                <div class="tab-content" id="script-editor">
+                    <div class="script-editor-form">
+                        <div class="form-group">
+                            <label>Script Name:</label>
+                            <input type="text" id="scriptName" placeholder="Enter script name...">
+                        </div>
+                        <div class="form-group">
+                            <label>Script Type:</label>
+                            <select id="scriptType">
+                                <option value="cold-call">Cold Call</option>
+                                <option value="follow-up">Follow Up</option>
+                                <option value="objection-handling">Objection Handling</option>
+                                <option value="closing">Closing</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Script Content:</label>
+                            <textarea id="scriptContentEditor" rows="12" placeholder="Enter your call script here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Tags (comma-separated):</label>
+                            <input type="text" id="scriptTags" placeholder="e.g., cold-call, B2B, manufacturing">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelScriptModal">Cancel</button>
+                <button class="btn btn-primary" id="saveScriptBtn" style="display: none;">Save Script</button>
+                <button class="btn btn-danger" id="deleteScriptBtn" style="display: none;">Delete Script</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prospect Review Modal -->
+    <div class="modal" id="prospectReviewModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3>Review Prospects</h3>
+                <button class="modal-close" id="closeProspectReviewModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="prospect-review-tabs">
+                    <button class="tab-btn active" data-tab="prospect-list">Prospect List</button>
+                    <button class="tab-btn" data-tab="prospect-details">Prospect Details</button>
+                </div>
+                
+                <!-- Prospect List Tab -->
+                <div class="tab-content active" id="prospect-list">
+                    <div class="prospect-list-filters">
+                        <div class="filter-group">
+                            <label>Stage:</label>
+                            <select id="reviewStageFilter">
+                                <option value="unreviewed">Unreviewed</option>
+                                <option value="finalized">Finalized</option>
+                                <option value="unqualified">Unqualified</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>State:</label>
+                            <select id="reviewStateFilter">
+                                <option value="all">All States</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Service:</label>
+                            <select id="reviewServiceFilter">
+                                <option value="all">All Services</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="prospect-review-table">
+                        <table class="review-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAllReviewProspects"></th>
+                                    <th>Company</th>
+                                    <th>Website</th>
+                                    <th>State</th>
+                                    <th>Service</th>
+                                    <th>Revenue</th>
+                                    <th>Employees</th>
+                                    <th>Stage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prospectReviewTableBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bulk-actions">
+                        <button class="btn btn-success" id="bulkApproveBtn">
+                            <i class="fas fa-check"></i> Finalize Selected
+                        </button>
+                        <button class="btn btn-danger" id="bulkRejectBtn">
+                            <i class="fas fa-times"></i> Reject Selected
+                        </button>
+                        <button class="btn btn-danger" id="bulkDeleteBtn">
+                            <i class="fas fa-trash"></i> Delete Selected
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Prospect Details Tab -->
+                <div class="tab-content" id="prospect-details">
+                    <div class="prospect-details-form">
+                        <div class="form-group">
+                            <label>Company Name:</label>
+                            <input type="text" id="reviewCompany" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Website:</label>
+                            <input type="url" id="reviewWebsite" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>State:</label>
+                            <input type="text" id="reviewState" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Service:</label>
+                            <input type="text" id="reviewService" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Revenue:</label>
+                            <input type="text" id="reviewRevenue" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Employees:</label>
+                            <input type="text" id="reviewEmployees" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Name:</label>
+                            <input type="text" id="reviewContact">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="reviewEmail">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="tel" id="reviewPhone">
+                        </div>
+                        <div class="form-group">
+                            <label>Industry:</label>
+                            <input type="text" id="reviewIndustry">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes:</label>
+                            <textarea id="reviewNotes" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Decision:</label>
+                            <select id="reviewDecision">
+                                <option value="">Select decision...</option>
+                                <option value="approve">Finalize for CRM</option>
+                                <option value="reject">Reject</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelProspectReview">Cancel</button>
+                <button class="btn btn-primary" id="saveProspectReview">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Mode Overlay -->
+    <div class="call-mode-overlay" id="callModeOverlay">
+        <div class="call-mode-backdrop"></div>
+        
+        <!-- Call Mode Widget Bar -->
+        <div class="call-mode-widget-bar" id="callModeWidgetBar">
+            <!-- Call Mode Header -->
+            <div class="call-mode-header">
+                <div class="call-mode-title">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>Call Mode</span>
+                </div>
+                <button class="call-mode-close" id="exitCallMode">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Current Lead Card -->
+            <div class="call-mode-lead-card">
+                <div class="lead-avatar">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="lead-info">
+                    <h3 class="lead-company" id="callModeCompany">No Lead Selected</h3>
+                    <p class="lead-contact" id="callModeContact">-</p>
+                    <p class="lead-phone" id="callModePhone">-</p>
+                </div>
+                <div class="lead-actions">
+                    <button class="call-action-btn primary" id="callModeCallBtn">
+                        <i class="fas fa-phone"></i>
+                        <span>Call</span>
+                    </button>
+                    <button class="call-action-btn secondary" id="callModeCopyPhone">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="call-action-btn secondary" id="callModeVisitWebsite">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Call Tools -->
+            <div class="call-mode-tools">
+                <div class="tool-group">
+                    <h4>Quick Actions</h4>
+                    <div class="tool-buttons">
+                        <button class="tool-btn" id="callModeNextLead">
+                            <i class="fas fa-arrow-right"></i>
+                            <span>Next Lead</span>
+                        </button>
+                        <button class="tool-btn" id="callModePreviousLead">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button class="tool-btn" id="callModeRandomLead">
+                            <i class="fas fa-random"></i>
+                            <span>Random</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tool-group">
+                    <h4>Call Action</h4>
+                    <div class="call-action-container">
+                        <button class="call-complete-btn" id="callCompleteBtn">
+                            <i class="fas fa-phone"></i>
+                            <span>Called</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call Script -->
+            <div class="call-mode-script">
+                <div class="script-header">
+                    <h4><i class="fas fa-file-alt"></i> Call Script</h4>
+                    <div class="script-controls">
+                        <select id="scriptSelector" class="script-dropdown">
+                            <option value="">Select Script...</option>
+                        </select>
+                        <button class="script-btn" id="manageScriptsBtn">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="script-content" id="scriptContent">
+                    <div class="no-script">
+                        <i class="fas fa-file-alt"></i>
+                        <p>Select a script to display here</p>
+                    </div>
+                </div>
+                <div class="script-actions">
+                    <button class="script-action-btn" id="copyScriptBtn">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy Script</span>
+                    </button>
+                    <button class="script-action-btn" id="clearScriptBtn">
+                        <i class="fas fa-times"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Completion Form -->
+            <div class="call-mode-completion" id="callModeCompletion" style="display: none;">
+                <h4><i class="fas fa-phone"></i> Call Completed</h4>
+                <div class="completion-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Call Outcome:</label>
+                            <select id="callCompletionOutcome" required>
+                                <option value="">Select outcome...</option>
+                                <option value="meeting_set">Meeting Set</option>
+                                <option value="receptionist">Receptionist/Gatekeeper</option>
+                                <option value="not_interested">Not Interested</option>
+                                <option value="voicemail">Voicemail</option>
+                                <option value="callback_requested">Callback Requested</option>
+                                <option value="wrong_number">Wrong Number</option>
+                                <option value="no_answer">No Answer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Next Action:</label>
+                            <select id="callCompletionNextAction">
+                                <option value="none">No Action</option>
+                                <option value="email_follow_up">Send Email Follow-up</option>
+                                <option value="call_back">Call Back</option>
+                                <option value="send_proposal">Send Proposal</option>
+                                <option value="schedule_meeting">Schedule Meeting</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Call Notes:</label>
+                        <textarea id="callCompletionNotes" rows="3" placeholder="Enter call notes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Follow-up Date (if applicable):</label>
+                        <input type="date" id="callCompletionFollowUpDate">
+                    </div>
+                    <div class="completion-actions">
+                        <button class="btn btn-secondary" id="cancelCallCompletion">
+                            <i class="fas fa-times"></i>
+                            <span>Cancel</span>
+                        </button>
+                        <button class="btn btn-primary" id="saveCallCompletion">
+                            <i class="fas fa-save"></i>
+                            <span>Save & Next Lead</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Notes -->
+            <div class="call-mode-notes" id="callModeNotesSection">
+                <h4>Call Notes</h4>
+                <textarea id="callModeNotes" placeholder="Take notes during the call..."></textarea>
+                <div class="notes-actions">
+                    <button class="notes-btn" id="callModeSaveNotes">
+                        <i class="fas fa-save"></i>
+                        <span>Save Notes</span>
+                    </button>
+                    <button class="notes-btn" id="callModeClearNotes">
+                        <i class="fas fa-trash"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Call Stats -->
+            <div class="call-mode-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="callModeCallsToday">0</span>
+                    <span class="stat-label">Calls Today</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="callModeMeetingsSet">0</span>
+                    <span class="stat-label">Meetings Set</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="callModeSuccessRate">0%</span>
+                    <span class="stat-label">Success Rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Hidden file input for CSV import -->
+    <input type="file" id="csvFileInput" accept=".csv" multiple style="display: none;">
+    <input type="file" id="prospectCsvFileInput" accept=".csv" multiple style="display: none;">
+
+    <script src="app.js"></script>
+</body>
+</html>

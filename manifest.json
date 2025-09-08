@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Sales CRM Dashboard",
+  "version": "1.0.2",
+  "description": "Professional CRM dashboard for managing leads, call queues, and email campaigns",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "clipboardWrite",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*",
+    "https://www.thomasnet.com/*"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.thomasnet.com/*"],
+      "js": ["content-script.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
