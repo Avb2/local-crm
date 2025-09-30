@@ -133,47 +133,6 @@ class ThomasnetHandler(BaseHTTPRequestHandler):
         except Exception as e:
             return {"error": f"Scraper failed: {str(e)}"}
 
-    def generate_mock_prospects(self, state, service, count):
-        """Generate realistic mock prospects for testing"""
-        companies = [
-            'Precision Manufacturing Inc', 'Advanced CNC Solutions', 'Quality Machining Co',
-            'Industrial Components LLC', 'Custom Fabrication Works', 'Steel Processing Corp',
-            'Metal Works Industries', 'Precision Tooling Inc', 'Advanced Welding Services',
-            'Machine Shop Solutions', 'Industrial Services Group', 'Custom Parts Manufacturing'
-        ]
-        
-        services = [
-            'CNC Machining', 'Robotic Welding', 'Powder Coating', 'Metal Fabrication',
-            'Precision Tooling', 'Custom Manufacturing', 'Industrial Services', 'Quality Control'
-        ]
-        
-        states = ['California', 'Texas', 'Florida', 'New York', 'Illinois', 'Pennsylvania']
-        
-        prospects = []
-        for i in range(min(count, 50)):  # Limit to 50 for performance
-            company = companies[i % len(companies)]
-            if i > 0:
-                company += f" {i + 1}"
-            
-            # Generate realistic data
-            revenue = f"${(i * 2.5 + 5):.1f}M"
-            employees = (i * 10 + 25) % 200 + 25
-            
-            prospects.append({
-                "company": company,
-                "website": f"https://{company.lower().replace(' ', '').replace('inc', '').replace('llc', '').replace('corp', '')}.com",
-                "state": state,
-                "service": service,
-                "revenue": revenue,
-                "employees": employees,
-                "contact": f"Contact Person {i + 1}",
-                "email": f"contact{i + 1}@{company.lower().replace(' ', '')}.com",
-                "phone": f"555-{1000 + i:04d}",
-                "industry": "Manufacturing",
-                "notes": f"Generated from Thomasnet scraper - {service} in {state}"
-            })
-        
-        return prospects
 
     def log_message(self, format, *args):
         # Suppress default logging

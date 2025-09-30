@@ -423,8 +423,6 @@ class SalesCRM {
             this.updateDashboard();
         } else if (tabName === 'prospecting') {
             this.updateProspectingView();
-            // Add some sample data if no prospects exist
-            this.ensureSampleProspects();
         }
     }
 
@@ -3463,32 +3461,6 @@ class SalesCRM {
     }
 
 
-    generateMockProspects(state, service, count) {
-        const companies = [
-            'ABC Manufacturing', 'XYZ Industries', 'TechCorp Solutions', 'Precision Parts Inc',
-            'Advanced Machining', 'Quality Components', 'Industrial Services', 'Metal Works Co',
-            'Precision Engineering', 'Custom Fabrication', 'Machine Shop Pro', 'Steel Solutions'
-        ];
-        
-        const prospects = [];
-        for (let i = 0; i < count; i++) {
-            const company = companies[Math.floor(Math.random() * companies.length)] + ` ${i + 1}`;
-            prospects.push({
-                company: company,
-                website: `https://${company.toLowerCase().replace(/\s+/g, '')}.com`,
-                state: state,
-                service: service,
-                revenue: `$${(Math.random() * 50 + 1).toFixed(1)}M`,
-                employees: Math.floor(Math.random() * 500 + 10),
-                contact: '',
-                email: '',
-                phone: '',
-                industry: '',
-                notes: ''
-            });
-        }
-        return prospects;
-    }
 
     async importProspects() {
         document.getElementById('prospectCsvFileInput').click();
@@ -3987,68 +3959,6 @@ class SalesCRM {
         }
     }
 
-    async ensureSampleProspects() {
-        // Add some sample prospects if none exist
-        const prospects = await this.getProspects();
-        if (prospects.length === 0) {
-            const sampleProspects = [
-                {
-                    id: Date.now() + 1,
-                    company: 'ABC Manufacturing Inc',
-                    website: 'https://abcmanufacturing.com',
-                    state: 'California',
-                    service: 'CNC Machining',
-                    revenue: '$15.2M',
-                    employees: 125,
-                    contact: 'John Smith',
-                    email: 'john@abcmanufacturing.com',
-                    phone: '555-0123',
-                    industry: 'Manufacturing',
-                    notes: 'Large manufacturing company',
-                    stage: 'unreviewed',
-                    decision: '',
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: Date.now() + 2,
-                    company: 'Precision Parts LLC',
-                    website: 'https://precisionparts.com',
-                    state: 'Texas',
-                    service: 'Robotic Welding Services',
-                    revenue: '$8.7M',
-                    employees: 45,
-                    contact: 'Sarah Johnson',
-                    email: 'sarah@precisionparts.com',
-                    phone: '555-0456',
-                    industry: 'Automotive',
-                    notes: 'Specializes in automotive parts',
-                    stage: 'unreviewed',
-                    decision: '',
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: Date.now() + 3,
-                    company: 'Metal Works Co',
-                    website: 'https://metalworks.com',
-                    state: 'Florida',
-                    service: 'Powder Coating Services',
-                    revenue: '$12.1M',
-                    employees: 78,
-                    contact: 'Mike Davis',
-                    email: 'mike@metalworks.com',
-                    phone: '555-0789',
-                    industry: 'Industrial',
-                    notes: 'Industrial metal finishing',
-                    stage: 'finalized',
-                    decision: 'approve',
-                    dateAdded: new Date().toISOString()
-                }
-            ];
-            
-            await this.saveToStorage('prospects', sampleProspects);
-            this.updateProspectingView();
-        }
-    }
 
     // Call Mode Functionality
     initCallMode() {
@@ -4720,80 +4630,12 @@ class SalesCRM {
         try {
             const scripts = await this.getFromStorage('callScripts');
             this.callScripts = scripts || [];
-            
-            // Add default scripts if none exist
-            if (this.callScripts.length === 0) {
-                this.callScripts = this.getDefaultScripts();
-                await this.saveToStorage('callScripts', this.callScripts);
-            }
         } catch (error) {
             console.error('Error loading scripts:', error);
-            this.callScripts = this.getDefaultScripts();
+            this.callScripts = [];
         }
     }
 
-    getDefaultScripts() {
-        return [
-            {
-                id: 'cold-call-basic',
-                name: 'Cold Call - Basic',
-                type: 'cold-call',
-                content: `Hi [Name], this is [Your Name] from [Company]. I hope I'm not catching you at a bad time.
-
-I'm calling because we specialize in [Service/Product] and I noticed that [Company Name] is in the [Industry] space. 
-
-I was wondering if you'd be open to a brief conversation about how we might be able to help [Company Name] with [specific benefit or solution].
-
-Do you have 2-3 minutes to chat, or would there be a better time to call?`,
-                tags: ['cold-call', 'basic', 'introduction'],
-                dateCreated: new Date().toISOString(),
-                dateModified: new Date().toISOString()
-            },
-            {
-                id: 'follow-up-standard',
-                name: 'Follow Up - Standard',
-                type: 'follow-up',
-                content: `Hi [Name], this is [Your Name] from [Company]. 
-
-I'm following up on our conversation from [Date/Time] about [Topic].
-
-I wanted to check in and see if you had any questions about [specific point discussed] or if you'd like to schedule that [next step] we talked about.
-
-What would work best for your schedule this week?`,
-                tags: ['follow-up', 'scheduling', 'check-in'],
-                dateCreated: new Date().toISOString(),
-                dateModified: new Date().toISOString()
-            },
-            {
-                id: 'objection-budget',
-                name: 'Objection - Budget Concerns',
-                type: 'objection-handling',
-                content: `I completely understand budget is a concern. That's actually why I wanted to speak with you.
-
-Many of our clients initially thought the same thing, but they found that our solution actually saves them money in the long run by [specific benefit].
-
-For example, [Client Name] was able to [specific result] which resulted in [quantified benefit].
-
-Would you be open to a brief conversation about how we might be able to work within your budget constraints?`,
-                tags: ['objection', 'budget', 'value-proposition'],
-                dateCreated: new Date().toISOString(),
-                dateModified: new Date().toISOString()
-            },
-            {
-                id: 'closing-soft',
-                name: 'Closing - Soft Close',
-                type: 'closing',
-                content: `Based on what we've discussed, it sounds like [Company Name] could really benefit from our [Service/Product].
-
-What I'd like to propose is [specific next step] so we can show you exactly how this would work for your situation.
-
-Does that sound like something you'd be interested in exploring further?`,
-                tags: ['closing', 'soft-close', 'next-steps'],
-                dateCreated: new Date().toISOString(),
-                dateModified: new Date().toISOString()
-            }
-        ];
-    }
 
     async saveScripts() {
         await this.saveToStorage('callScripts', this.callScripts);
